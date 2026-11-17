@@ -3,12 +3,12 @@
     $role = auth()->check() ? (auth()->user()->getAttributes()['role'] ?? null) : null;
 @endphp
 
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-200">
+<nav x-data="{ open: false, scrolled: false }" @scroll.window="scrolled = window.scrollY > 4" :class="scrolled ? 'shadow-sm' : ''" class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex items-center gap-8">
                 <!-- Logo -->
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 shrink-0">
+                <a href="{{ route('landing') }}" class="flex items-center gap-2 shrink-0">
                     <svg class="h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
                     </svg>
@@ -18,8 +18,7 @@
                 <!-- Menu utama -->
                 <div class="hidden md:flex items-center gap-1">
                     @guest
-                        <x-nav-link :href="route('login')" :active="request()->routeIs('login')">Masuk</x-nav-link>
-                        <x-nav-link :href="route('register')" :active="request()->routeIs('register')">Daftar</x-nav-link>
+                        {{-- Tamu cukup memakai tombol Masuk/Daftar di kanan. --}}
                     @elseif ($role === 'panitia')
                         <x-nav-link :href="route('panitia.dashboard')" :active="request()->routeIs('panitia.dashboard')">Dashboard</x-nav-link>
                         <x-nav-link :href="route('panitia.workshops.index')" :active="request()->routeIs('panitia.workshops.*')">Kelola Workshop</x-nav-link>
@@ -79,8 +78,7 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden md:hidden border-t border-gray-200">
         <div class="pt-2 pb-3 space-y-1 px-4">
             @guest
-                <x-responsive-nav-link :href="route('login')" :active="request()->routeIs('login')">Masuk</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('register')" :active="request()->routeIs('register')">Daftar</x-responsive-nav-link>
+                {{-- Tamu cukup memakai tombol Masuk/Daftar di kanan. --}}
             @elseif ($role === 'panitia')
                 <x-responsive-nav-link :href="route('panitia.dashboard')" :active="request()->routeIs('panitia.dashboard')">Dashboard</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('panitia.workshops.index')" :active="request()->routeIs('panitia.workshops.*')">Kelola Workshop</x-responsive-nav-link>

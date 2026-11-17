@@ -40,12 +40,14 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            // FR-01: role peserta selalu ditetapkan server, tidak dari input klien.
+            'role' => 'peserta',
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('workshops.index', absolute: false));
     }
 }

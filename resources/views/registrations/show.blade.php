@@ -66,4 +66,21 @@
             </div>
         </aside>
     </div>
+
+    @push('scripts')
+        @if (session('snap_token'))
+            <script src="https://app.sandbox.midtrans.com/snap/snap.js"
+                    data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+            <script>
+                window.addEventListener('load', function () {
+                    window.snap.pay(@json(session('snap_token')), {
+                        onSuccess: function () { window.location.href = @json(route('registrations.show', $registration)); },
+                        onPending: function () { window.location.href = @json(route('registrations.show', $registration)); },
+                        onError: function () { window.location.href = @json(route('registrations.show', $registration)); },
+                        onClose: function () {}
+                    });
+                });
+            </script>
+        @endif
+    @endpush
 </x-app-layout>

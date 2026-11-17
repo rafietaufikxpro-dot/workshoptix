@@ -62,6 +62,12 @@ class Workshop extends Model
         return max(0, $this->quota - $this->seatsTaken());
     }
 
+    // Aksesor agar view memakai $workshop->seats_left baik untuk data dummy maupun Eloquent.
+    public function getSeatsLeftAttribute(): int
+    {
+        return $this->seatsLeft();
+    }
+
     public function hasStarted(): bool
     {
         return $this->starts_at->isPast();
