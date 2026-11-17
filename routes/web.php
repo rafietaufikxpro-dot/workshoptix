@@ -12,12 +12,16 @@ use App\Models\Registration;
 use App\Models\Workshop;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => view('landing', [
-    'workshops' => Workshop::orderBy('starts_at')->get(),
-    'workshopCount' => Workshop::count(),
-    'pesertaCount' => Registration::distinct('user_id')->count(),
-    'tiketCount' => Registration::where('payment_status', 'paid')->count(),
-]))->name('landing');
+Route::get('/', function () {
+    $workshops = Workshop::upcoming()->orderBy('starts_at')->get();
+
+    return view('landing', [
+        'workshops' => $workshops,
+        'workshopCount' => $workshops->count(),
+        'pesertaCount' => Registration::distinct('user_id')->count(),
+        'tiketCount' => Registration::where('payment_status', 'paid')->count(),
+    ]);
+})->name('landing');
 
 Route::get('/dashboard', function () {
     $role = auth()->user()->getAttributes()['role'] ?? null;
@@ -56,16 +60,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/registrations/{registration}', [RegistrationController::class, 'show'])
         ->name('registrations.show');
 
-    Route::prefix('panitia')->name('panitia.')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-        Route::get('/registrations', [PanitiaRegistrationController::class, 'index'])
-            ->name('registrations.index');
-    });
 });
 
-// Item 5: CRUD workshop panitia (route nyata, bukan dummy).
+// Semua rute panitia wajib auth + role:panitia.
 Route::middleware(['auth', 'role:panitia'])->prefix('panitia')->name('panitia.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/registrations', [PanitiaRegistrationController::class, 'index'])
+        ->name('registrations.index');
+
     Route::resource('workshops', PanitiaWorkshopController::class)->except(['show']);
 });
 

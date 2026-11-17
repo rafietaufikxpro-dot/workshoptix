@@ -50,7 +50,9 @@
                 </div>
 
                 <div class="mt-6">
-                    @if ($workshop->seats_left > 0)
+                    @if ($workshop->hasStarted())
+                        <x-button type="button" class="w-full" disabled>Sudah Dimulai</x-button>
+                    @elseif ($workshop->seats_left > 0)
                         <form method="POST" action="{{ route('workshops.register', $workshop->id) }}">
                             @csrf
                             <x-button type="submit" class="w-full">Daftar</x-button>

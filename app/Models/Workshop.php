@@ -68,6 +68,11 @@ class Workshop extends Model
         return $this->seatsLeft();
     }
 
+    public function scopeUpcoming($query)
+    {
+        return $query->where('starts_at', '>', now());
+    }
+
     public function hasStarted(): bool
     {
         return $this->starts_at->isPast();
