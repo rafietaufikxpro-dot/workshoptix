@@ -100,7 +100,7 @@ class WorkshopController extends Controller
      */
     protected function storeImage(Request $request): string
     {
-        $directory = public_path('workshops');
+        $directory = public_path('uploads/workshops');
 
         if (! is_dir($directory)) {
             mkdir($directory, 0755, true);
@@ -122,7 +122,7 @@ class WorkshopController extends Controller
             return;
         }
 
-        $path = public_path('workshops/'.$filename);
+        $path = public_path('uploads/workshops/'.$filename);
 
         if (is_file($path)) {
             unlink($path);

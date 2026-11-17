@@ -71,7 +71,7 @@ class Workshop extends Model
 
     public function getImageUrlAttribute(): ?string
     {
-        return $this->image ? asset('workshops/'.$this->image) : null;
+        return $this->image ? '/uploads/workshops/'.$this->image : null;
     }
 
     public function scopeUpcoming($query)

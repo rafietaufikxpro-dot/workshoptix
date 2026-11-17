@@ -60,7 +60,7 @@ Buka `http://localhost:8000`:
 - Pembayaran Midtrans Sandbox: Snap token dari server, `gross_amount` dari `registrations.amount`.
 - Cek status lewat backend (mapping status Midtrans), tiket digital dengan kode unik.
 - CRUD workshop untuk panitia, blokir hapus workshop yang sudah punya pendaftar.
-- Foto workshop opsional (JPG/PNG/WebP, maks 2 MB) di `public/workshops`; tampil sebagai thumbnail di katalog, landing, daftar panitia, dan halaman detail.
+- Foto workshop opsional (JPG/PNG/WebP, maks 2 MB) di `public/uploads/workshops`; tampil sebagai thumbnail di katalog, landing, daftar panitia, dan halaman detail.
 - Dashboard panitia dan daftar pendaftar (eager loading).
 
 ## Struktur penting
