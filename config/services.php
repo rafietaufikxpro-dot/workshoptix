@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'midtrans' => [
+        // Server Key: dipakai MidtransService di backend saja, tidak pernah dikirim ke view.
+        'server_key' => env('MIDTRANS_SERVER_KEY'),
+        // Client Key: aman dipakai di front-end untuk Snap.
+        'client_key' => env('MIDTRANS_CLIENT_KEY'),
+        'is_production' => (bool) env('MIDTRANS_IS_PRODUCTION', false),
+    ],
+
 ];

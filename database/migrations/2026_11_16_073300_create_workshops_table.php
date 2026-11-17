@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('workshops', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->text('description');
+            $table->string('speaker');
+            $table->string('venue');
+            $table->dateTime('starts_at');
+            $table->dateTime('ends_at');
+            $table->unsignedInteger('price');
+            $table->unsignedInteger('quota');
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }
