@@ -3,7 +3,15 @@
     $type = session('success') ? 'success' : (session('error') ? 'error' : 'status');
 @endphp
 
-@if ($message)
+@if ($errors->any())
+    <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+        <ul class="list-disc space-y-1 ps-5">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@elseif ($message)
     @php
         $styles = [
             'success' => 'border-green-200 bg-green-50 text-green-800',
