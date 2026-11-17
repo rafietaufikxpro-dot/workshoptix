@@ -33,8 +33,12 @@
             <!-- Kanan -->
             <div class="hidden md:flex items-center gap-3">
                 @guest
-                    <x-button href="{{ route('login') }}" variant="secondary">Masuk</x-button>
-                    <x-button href="{{ route('register') }}">Daftar</x-button>
+                    @unless (request()->routeIs('login'))
+                        <x-button href="{{ route('login') }}" variant="secondary">Masuk</x-button>
+                    @endunless
+                    @unless (request()->routeIs('register'))
+                        <x-button href="{{ route('register') }}">Daftar</x-button>
+                    @endunless
                 @else
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
@@ -78,7 +82,12 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden md:hidden border-t border-gray-200">
         <div class="pt-2 pb-3 space-y-1 px-4">
             @guest
-                {{-- Tamu cukup memakai tombol Masuk/Daftar di kanan. --}}
+                @unless (request()->routeIs('login'))
+                    <x-responsive-nav-link :href="route('login')" :active="request()->routeIs('login')">Masuk</x-responsive-nav-link>
+                @endunless
+                @unless (request()->routeIs('register'))
+                    <x-responsive-nav-link :href="route('register')" :active="request()->routeIs('register')">Daftar</x-responsive-nav-link>
+                @endunless
             @elseif ($role === 'panitia')
                 <x-responsive-nav-link :href="route('panitia.dashboard')" :active="request()->routeIs('panitia.dashboard')">Dashboard</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('panitia.workshops.index')" :active="request()->routeIs('panitia.workshops.*')">Kelola Workshop</x-responsive-nav-link>
