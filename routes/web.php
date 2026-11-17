@@ -20,8 +20,10 @@ Route::get('/', fn () => view('landing', [
 ]))->name('landing');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    $role = auth()->user()->getAttributes()['role'] ?? null;
+
+    return redirect()->route($role === 'panitia' ? 'panitia.dashboard' : 'workshops.index');
+})->middleware('auth')->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
