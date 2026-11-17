@@ -21,7 +21,7 @@ class RegistrationPolicy
      */
     public function view(User $user, Registration $registration): bool
     {
-        return false;
+        return $user->id === $registration->user_id;
     }
 
     /**
@@ -29,7 +29,7 @@ class RegistrationPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->role === 'peserta';
     }
 
     /**
@@ -37,7 +37,7 @@ class RegistrationPolicy
      */
     public function update(User $user, Registration $registration): bool
     {
-        return false;
+        return $user->id === $registration->user_id;
     }
 
     /**

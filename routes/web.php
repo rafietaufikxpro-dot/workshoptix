@@ -1,12 +1,23 @@
 <?php
 
+use App\Http\Controllers\Panitia\DashboardController;
+use App\Http\Controllers\Panitia\RegistrationController as PanitiaRegistrationController;
+use App\Http\Controllers\Panitia\WorkshopController as PanitiaWorkshopController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
-use App\Support\DummyData;
+use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\WorkshopController;
+use App\Models\Registration;
+use App\Models\Workshop;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', fn () => view('landing', [
+    'workshops' => Workshop::orderBy('starts_at')->get(),
+    'workshopCount' => Workshop::count(),
+    'pesertaCount' => Registration::distinct('user_id')->count(),
+    'tiketCount' => Registration::where('payment_status', 'paid')->count(),
+]))->name('landing');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -15,7 +26,6 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 // ---------------------------------------------------------------------------
@@ -23,73 +33,38 @@ Route::middleware('auth')->group(function () {
 // Nama rute mengikuti PRD 7.6 agar view tidak berubah saat disambungkan ke DB.
 // ---------------------------------------------------------------------------
 Route::middleware('auth')->group(function () {
-    Route::get('/workshops', fn () => view('workshops.index', [
-        'workshops' => DummyData::workshops(),
-    ]))->name('workshops.index');
+    Route::get('/workshops', [WorkshopController::class, 'index'])->name('workshops.index');
 
-    Route::get('/workshops/{workshop}', fn ($workshop) => view('workshops.show', [
-        'workshop' => DummyData::workshop($workshop),
-    ]))->name('workshops.show');
+    Route::get('/workshops/{workshop}', [WorkshopController::class, 'show'])->name('workshops.show');
 
-    Route::post('/workshops/{workshop}/register', function ($workshop) {
-        return back()->with('error', 'Langkah 02: data dummy, pendaftaran belum disimpan.');
-    })->name('workshops.register');
+    Route::post('/workshops/{workshop}/register', [WorkshopController::class, 'register'])
+        ->name('workshops.register');
 
-    Route::get('/registrations', fn () => view('registrations.index', [
-        'registrations' => DummyData::registrations(),
-    ]))->name('registrations.index');
+    Route::get('/registrations', [RegistrationController::class, 'index'])->name('registrations.index');
 
-    Route::get('/registrations/{registration}/ticket', fn ($registration) => view('registrations.ticket', [
-        'registration' => DummyData::registration($registration),
-    ]))->name('registrations.ticket');
+    Route::get('/registrations/{registration}/ticket', [TicketController::class, 'show'])
+        ->name('registrations.ticket');
 
-    Route::post('/registrations/{registration}/pay', function ($registration) {
-        return back()->with('status', 'Langkah 02: pembayaran dummy, Snap belum dipanggil.');
-    })->name('registrations.pay');
+    Route::post('/registrations/{registration}/pay', [PaymentController::class, 'pay'])
+        ->name('registrations.pay');
 
-    Route::post('/registrations/{registration}/check-status', function ($registration) {
-        return back()->with('status', 'Langkah 02: pengecekan status dummy.');
-    })->name('registrations.check');
+    Route::post('/registrations/{registration}/check-status', [PaymentController::class, 'check'])
+        ->name('registrations.check');
 
-    Route::get('/registrations/{registration}', fn ($registration) => view('registrations.show', [
-        'registration' => DummyData::registration($registration),
-    ]))->name('registrations.show');
+    Route::get('/registrations/{registration}', [RegistrationController::class, 'show'])
+        ->name('registrations.show');
 
     Route::prefix('panitia')->name('panitia.')->group(function () {
-        Route::get('/dashboard', fn () => view('panitia.dashboard', [
-            'workshops' => DummyData::workshops(),
-            'pendaftar' => DummyData::pendaftar(),
-        ]))->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        Route::get('/workshops', fn () => view('panitia.workshops.index', [
-            'workshops' => DummyData::workshops(),
-        ]))->name('workshops.index');
-
-        Route::get('/workshops/create', fn () => view('panitia.workshops.create'))->name('workshops.create');
-
-        Route::post('/workshops', function () {
-            return redirect()->route('panitia.workshops.index')
-                ->with('success', 'Langkah 02: workshop dummy "tersimpan" (belum ke database).');
-        })->name('workshops.store');
-
-        Route::get('/workshops/{workshop}/edit', fn ($workshop) => view('panitia.workshops.edit', [
-            'workshop' => DummyData::workshop($workshop),
-        ]))->name('workshops.edit');
-
-        Route::put('/workshops/{workshop}', function ($workshop) {
-            return redirect()->route('panitia.workshops.index')
-                ->with('success', 'Langkah 02: perubahan workshop dummy.');
-        })->name('workshops.update');
-
-        Route::delete('/workshops/{workshop}', function ($workshop) {
-            return redirect()->route('panitia.workshops.index')
-                ->with('success', 'Langkah 02: penghapusan workshop dummy.');
-        })->name('workshops.destroy');
-
-        Route::get('/registrations', fn () => view('panitia.registrations.index', [
-            'pendaftar' => DummyData::pendaftar(),
-        ]))->name('registrations.index');
+        Route::get('/registrations', [PanitiaRegistrationController::class, 'index'])
+            ->name('registrations.index');
     });
+});
+
+// Item 5: CRUD workshop panitia (route nyata, bukan dummy).
+Route::middleware(['auth', 'role:panitia'])->prefix('panitia')->name('panitia.')->group(function () {
+    Route::resource('workshops', PanitiaWorkshopController::class)->except(['show']);
 });
 
 require __DIR__.'/auth.php';
