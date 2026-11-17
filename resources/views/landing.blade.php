@@ -121,19 +121,47 @@
         </ol>
     </section>
 
-    <!-- CTA -->
+    <!-- CTA: tamu vs sudah login -->
+    @php
+        $loggedRole = auth()->check() ? (auth()->user()->getAttributes()['role'] ?? null) : null;
+    @endphp
+
     <section class="py-16 sm:py-20">
         <div class="rounded-2xl bg-indigo-600 px-6 py-14 text-center sm:px-12 sm:py-20">
-            <h2 class="mx-auto max-w-xl text-2xl font-semibold tracking-tight text-white sm:text-4xl">
-                Siap ikut workshop berikutnya?
-            </h2>
-            <p class="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-indigo-100 sm:text-base">
-                Buat akun sebagai peserta, pilih workshop, dan amankan kursimu.
-            </p>
-            <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-                <x-button href="{{ route('register') }}" class="px-5 py-2.5">Buat Akun</x-button>
-                <x-button href="{{ route('login') }}" variant="secondary" class="px-5 py-2.5">Masuk</x-button>
-            </div>
+            @guest
+                <h2 class="mx-auto max-w-xl text-2xl font-semibold tracking-tight text-white sm:text-4xl">
+                    Siap ikut workshop berikutnya?
+                </h2>
+                <p class="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-indigo-50 sm:text-base">
+                    Buat akun sebagai peserta, pilih workshop, dan amankan kursimu.
+                </p>
+                <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                    <x-button href="{{ route('register') }}" class="px-5 py-2.5">Buat Akun</x-button>
+                    <x-button href="{{ route('login') }}" variant="secondary" class="px-5 py-2.5">Masuk</x-button>
+                </div>
+            @elseif ($loggedRole === 'panitia')
+                <h2 class="mx-auto max-w-xl text-2xl font-semibold tracking-tight text-white sm:text-4xl">
+                    Kelola workshop dan pantau pendaftar.
+                </h2>
+                <p class="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-indigo-50 sm:text-base">
+                    Buka dashboard panitia untuk menambah workshop atau melihat daftar pendaftar.
+                </p>
+                <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                    <x-button href="{{ route('panitia.dashboard') }}" class="px-5 py-2.5">Dashboard Panitia</x-button>
+                    <x-button href="{{ route('panitia.workshops.index') }}" variant="secondary" class="px-5 py-2.5">Kelola Workshop</x-button>
+                </div>
+            @else
+                <h2 class="mx-auto max-w-xl text-2xl font-semibold tracking-tight text-white sm:text-4xl">
+                    Lanjutkan aktivitas workshopmu.
+                </h2>
+                <p class="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-indigo-50 sm:text-base">
+                    Cek status pendaftaranmu atau pilih workshop lain yang sedang dibuka.
+                </p>
+                <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                    <x-button href="{{ route('workshops.index') }}" class="px-5 py-2.5">Lihat Workshop</x-button>
+                    <x-button href="{{ route('registrations.index') }}" variant="secondary" class="px-5 py-2.5">Pendaftaran Saya</x-button>
+                </div>
+            @endguest
         </div>
     </section>
 </x-app-layout>
