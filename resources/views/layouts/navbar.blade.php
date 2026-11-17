@@ -3,7 +3,7 @@
     $role = auth()->check() ? (auth()->user()->getAttributes()['role'] ?? null) : null;
 @endphp
 
-<nav x-data="{ open: false, scrolled: false }" @scroll.window="scrolled = window.scrollY > 4" :class="scrolled ? 'shadow-sm' : ''" class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+<nav x-data="{ open: false, scrolled: false }" @scroll.window="scrolled = window.scrollY > 4" :class="scrolled ? 'shadow-sm' : ''" class="sticky top-0 z-40 bg-white/95 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex items-center gap-8">
