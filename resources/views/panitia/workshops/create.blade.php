@@ -3,7 +3,7 @@
     <x-slot name="header">Tambah Workshop</x-slot>
 
     <div class="mx-auto max-w-2xl">
-        <form method="POST" action="{{ route('panitia.workshops.store') }}" class="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <form method="POST" action="{{ route('panitia.workshops.store') }}" enctype="multipart/form-data" class="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             @csrf
 
             <div>
@@ -16,6 +16,14 @@
                 <x-input-label for="description" value="Deskripsi" />
                 <textarea id="description" name="description" rows="4" class="mt-1 block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required></textarea>
                 <x-input-error :messages="$errors->get('description')" class="mt-2" />
+            </div>
+
+            <div>
+                <x-input-label for="image" value="Foto Workshop" />
+                <input id="image" name="image" type="file" accept="image/*"
+                    class="mt-1 block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                <p class="mt-1 text-xs text-gray-500">Opsional. JPG, PNG, atau WebP; maksimal 2 MB.</p>
+                <x-input-error :messages="$errors->get('image')" class="mt-2" />
             </div>
 
             <div class="grid gap-6 sm:grid-cols-2">

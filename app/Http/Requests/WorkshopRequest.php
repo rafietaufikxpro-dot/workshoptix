@@ -25,6 +25,7 @@ class WorkshopRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'speaker' => ['required', 'string', 'max:255'],
             'venue' => ['required', 'string', 'max:255'],
             'starts_at' => ['required', 'date'],
@@ -44,6 +45,9 @@ class WorkshopRequest extends FormRequest
         return [
             'title.required' => 'Judul workshop wajib diisi.',
             'description.required' => 'Deskripsi workshop wajib diisi.',
+            'image.image' => 'Foto harus berupa gambar.',
+            'image.mimes' => 'Format foto harus JPG, PNG, atau WebP.',
+            'image.max' => 'Ukuran foto maksimal 2 MB.',
             'speaker.required' => 'Nama pemateri wajib diisi.',
             'venue.required' => 'Lokasi workshop wajib diisi.',
             'starts_at.required' => 'Jadwal mulai wajib diisi.',

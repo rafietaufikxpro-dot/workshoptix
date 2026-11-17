@@ -3,7 +3,7 @@
     <x-slot name="header">Ubah Workshop</x-slot>
 
     <div class="mx-auto max-w-2xl">
-        <form method="POST" action="{{ route('panitia.workshops.update', $workshop->id) }}" class="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <form method="POST" action="{{ route('panitia.workshops.update', $workshop->id) }}" enctype="multipart/form-data" class="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             @csrf
             @method('PUT')
 
@@ -17,6 +17,17 @@
                 <x-input-label for="description" value="Deskripsi" />
                 <textarea id="description" name="description" rows="4" class="mt-1 block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>{{ old('description', $workshop->description) }}</textarea>
                 <x-input-error :messages="$errors->get('description')" class="mt-2" />
+            </div>
+
+            <div>
+                <x-input-label for="image" value="Foto Workshop" />
+                @if ($workshop->image_url)
+                    <img src="{{ $workshop->image_url }}" alt="{{ $workshop->title }}" class="mt-3 h-32 w-48 rounded-lg border border-gray-200 object-cover">
+                @endif
+                <input id="image" name="image" type="file" accept="image/*"
+                    class="mt-3 block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                <p class="mt-1 text-xs text-gray-500">Opsional. JPG, PNG, atau WebP; maksimal 2 MB. Biarkan kosong bila tidak mengganti foto.</p>
+                <x-input-error :messages="$errors->get('image')" class="mt-2" />
             </div>
 
             <div class="grid gap-6 sm:grid-cols-2">

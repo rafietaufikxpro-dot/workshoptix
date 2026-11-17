@@ -14,6 +14,7 @@ class Workshop extends Model
     protected $fillable = [
         'title',
         'description',
+        'image',
         'speaker',
         'venue',
         'starts_at',
@@ -66,6 +67,11 @@ class Workshop extends Model
     public function getSeatsLeftAttribute(): int
     {
         return $this->seatsLeft();
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image ? asset('workshops/'.$this->image) : null;
     }
 
     public function scopeUpcoming($query)

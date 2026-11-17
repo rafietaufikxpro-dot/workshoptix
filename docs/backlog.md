@@ -23,3 +23,5 @@ Satu fitur = satu branch = satu Pull Request ke `main`.
   `docs/query-comparison.md`.
 - Landing page publik dipindah ke `/landing`; `/` mengarahkan tamu ke login dan
   pengguna login sesuai peran (PRD 7.6).
+- Foto workshop (tambahan di luar PRD 7.1, disetujui maintainer): kolom `image`,
+  unggah di form panitia, thumbnail di katalog/landing/detail/daftar panitia.

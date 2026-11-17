@@ -7,6 +7,7 @@ use App\Http\Requests\WorkshopRequest;
 use App\Models\Workshop;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class WorkshopController extends Controller
@@ -34,17 +35,14 @@ class WorkshopController extends Controller
      */
     public function store(WorkshopRequest $request): RedirectResponse
     {
-        $workshop = Workshop::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'speaker' => $request->speaker,
-            'venue' => $request->venue,
-            'starts_at' => $request->starts_at,
-            'ends_at' => $request->ends_at,
-            'price' => $request->price,
-            'quota' => $request->quota,
-            'created_by' => $request->user()->id,
-        ]);
+        $data = $request->validated();
+        $data['created_by'] = $request->user()->id;
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $this->storeImage($request);
+        }
+
+        $workshop = Workshop::create($data);
 
         return redirect()->route('panitia.workshops.index')
             ->with('success', "Workshop {$workshop->title} berhasil ditambahkan.");
@@ -63,7 +61,18 @@ class WorkshopController extends Controller
      */
     public function update(WorkshopRequest $request, Workshop $workshop): RedirectResponse
     {
-        $workshop->update($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('image')) {
+            $oldImage = $workshop->image;
+            $data['image'] = $this->storeImage($request);
+        }
+
+        $workshop->update($data);
+
+        if (($oldImage ?? null) && $oldImage !== ($workshop->image ?? null)) {
+            $this->deleteImage($oldImage);
+        }
 
         return redirect()->route('panitia.workshops.index')
             ->with('success', "Workshop {$workshop->title} berhasil diperbarui.");
@@ -79,9 +88,44 @@ class WorkshopController extends Controller
             return back()->with('error', 'Workshop ini sudah punya pendaftar dan tidak bisa dihapus.');
         }
 
+        $this->deleteImage($workshop->image);
         $workshop->delete();
 
         return redirect()->route('panitia.workshops.index')
             ->with('success', 'Workshop berhasil dihapus.');
+    }
+
+    /**
+     * Simpan foto workshop ke public/workshops dan kembalikan nama file.
+     */
+    protected function storeImage(Request $request): string
+    {
+        $directory = public_path('workshops');
+
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        $filename = Str::uuid()->toString().'.'.$request->file('image')->extension();
+
+        $request->file('image')->move($directory, $filename);
+
+        return $filename;
+    }
+
+    /**
+     * Hapus foto lama bila ada.
+     */
+    protected function deleteImage(?string $filename): void
+    {
+        if (! $filename) {
+            return;
+        }
+
+        $path = public_path('workshops/'.$filename);
+
+        if (is_file($path)) {
+            unlink($path);
+        }
     }
 }

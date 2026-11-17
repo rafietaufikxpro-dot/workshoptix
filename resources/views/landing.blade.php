@@ -50,9 +50,15 @@
                     <ul class="mt-5 space-y-4">
                         @foreach ($workshops->take(3) as $workshop)
                             <li class="flex items-center gap-3">
-                                <div class="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-lg bg-indigo-50 text-indigo-700">
-                                    <span class="text-[10px] font-medium uppercase leading-none">{{ $workshop->starts_at->format('M') }}</span>
-                                    <span class="mt-0.5 text-sm font-semibold leading-none">{{ $workshop->starts_at->format('d') }}</span>
+                                <div class="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-indigo-50">
+                                    @if ($workshop->image_url)
+                                        <img src="{{ $workshop->image_url }}" alt="{{ $workshop->title }}" class="h-full w-full object-cover">
+                                    @else
+                                        <div class="flex h-full w-full flex-col items-center justify-center text-indigo-700">
+                                            <span class="text-[10px] font-medium uppercase leading-none">{{ $workshop->starts_at->format('M') }}</span>
+                                            <span class="mt-0.5 text-sm font-semibold leading-none">{{ $workshop->starts_at->format('d') }}</span>
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="min-w-0">
                                     <p class="truncate text-sm font-medium text-gray-900">{{ $workshop->title }}</p>
