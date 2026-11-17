@@ -8,7 +8,7 @@ LKPD Drill Pra-Sertifikasi · Kelas XI RPL · SMK PESAT
 | Kelompok | Individu |
 | Maintainer | `<nama kamu>` |
 | Anggota | `<nama kamu>` |
-| Tautan repo | `<url repo>` |
+| Tautan repo | https://github.com/rafietaufikxpro-dot/workshoptix |
 
 ## Cara menjalankan
 
@@ -36,7 +36,10 @@ npm run dev            # terminal 1
 php artisan serve      # terminal 2
 ```
 
-Buka `http://localhost:8000`.
+Buka `http://localhost:8000`:
+
+- `/` mengarahkan tamu ke halaman login; yang login sebagai peserta ke daftar workshop, panitia ke dashboard (PRD 7.6).
+- `/landing` berisi halaman publik (katalog, langkah daftar, data ringkas).
 
 > Catatan lokal (Laragon): di laptop ini port MySQL dipakai `3520` karena port
 > 3306/3307 diblokir Windows (excluded TCP port range). Di komputer lain,
@@ -52,8 +55,8 @@ Buka `http://localhost:8000`.
 
 ## Fitur
 
-- Autentikasi Breeze dengan peran `panitia` dan `peserta` (role peserta dari server).
-- Katalog dan detail workshop, pendaftaran (tanpa ganda, kuota, workshop belum mulai).
+- Autentikasi Breeze dengan peran `panitia` dan `peserta` (role peserta dari server); semua rute `/panitia/*` dijaga middleware `role:panitia`.
+- Katalog dan detail workshop (hanya yang belum dimulai), pendaftaran (tanpa ganda, kuota dengan kunci baris, workshop belum mulai).
 - Pembayaran Midtrans Sandbox: Snap token dari server, `gross_amount` dari `registrations.amount`.
 - Cek status lewat backend (mapping status Midtrans), tiket digital dengan kode unik.
 - CRUD workshop untuk panitia, blokir hapus workshop yang sudah punya pendaftar.

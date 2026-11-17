@@ -12,7 +12,19 @@ use App\Models\Registration;
 use App\Models\Workshop;
 use Illuminate\Support\Facades\Route;
 
+// PRD 7.6: `/` mengarahkan tamu ke login, yang sudah login sesuai peran.
 Route::get('/', function () {
+    if (! auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    $role = auth()->user()->getAttributes()['role'] ?? null;
+
+    return redirect()->route($role === 'panitia' ? 'panitia.dashboard' : 'workshops.index');
+})->name('home');
+
+// Landing page publik (dipisah dari `/` agar PRD 7.6 terpenuhi).
+Route::get('/landing', function () {
     $workshops = Workshop::upcoming()->orderBy('starts_at')->get();
 
     return view('landing', [
@@ -22,12 +34,6 @@ Route::get('/', function () {
         'tiketCount' => Registration::where('payment_status', 'paid')->count(),
     ]);
 })->name('landing');
-
-Route::get('/dashboard', function () {
-    $role = auth()->user()->getAttributes()['role'] ?? null;
-
-    return redirect()->route($role === 'panitia' ? 'panitia.dashboard' : 'workshops.index');
-})->middleware('auth')->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
