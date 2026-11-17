@@ -1,58 +1,80 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# WorkshopTIX
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Pendaftaran dan tiket digital workshop IT.
+LKPD Drill Pra-Sertifikasi · Kelas XI RPL · SMK PESAT
 
-## About Laravel
+| | |
+|---|---|
+| Kelompok | Individu |
+| Maintainer | `<nama kamu>` |
+| Anggota | `<nama kamu>` |
+| Tautan repo | `<url repo>` |
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Cara menjalankan
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install && npm install
+cp .env.example .env && php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Isi `.env`:
 
-## Contributing
+```ini
+DB_DATABASE=workshoptix
+DB_USERNAME=root
+DB_PASSWORD=
+APP_TIMEZONE=Asia/Jakarta
+APP_LOCALE=id
+MIDTRANS_SERVER_KEY=<Server Key Sandbox>
+MIDTRANS_CLIENT_KEY=<Client Key Sandbox>
+MIDTRANS_IS_PRODUCTION=false
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan migrate --seed
+npm run dev            # terminal 1
+php artisan serve      # terminal 2
+```
 
-## Code of Conduct
+Buka `http://localhost:8000`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+> Catatan lokal (Laragon): di laptop ini port MySQL dipakai `3520` karena port
+> 3306/3307 diblokir Windows (excluded TCP port range). Di komputer lain,
+> `DB_PORT=3306` (default Laragon) sudah benar. Server Key **hanya** dipakai
+> di backend lewat `config/services.php`; Client Key yang dipakai di Snap.
 
-## Security Vulnerabilities
+## Akun uji
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+| Peran | Email | Password |
+|---|---|---|
+| Panitia | `panitia@workshoptix.test` | `password` |
+| Peserta | `peserta1@workshoptix.test` … `peserta8@workshoptix.test` | `password` |
 
-## License
+## Fitur
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- Autentikasi Breeze dengan peran `panitia` dan `peserta` (role peserta dari server).
+- Katalog dan detail workshop, pendaftaran (tanpa ganda, kuota, workshop belum mulai).
+- Pembayaran Midtrans Sandbox: Snap token dari server, `gross_amount` dari `registrations.amount`.
+- Cek status lewat backend (mapping status Midtrans), tiket digital dengan kode unik.
+- CRUD workshop untuk panitia, blokir hapus workshop yang sudah punya pendaftar.
+- Dashboard panitia dan daftar pendaftar (eager loading).
+
+## Struktur penting
+
+- `app/Models`: `User`, `Workshop`, `Registration` (+ relasi dan kuota).
+- `app/Http/Controllers/Panitia`: `WorkshopController`, `RegistrationController`, `DashboardController`.
+- `app/Http/Controllers`: `WorkshopController`, `RegistrationController`, `PaymentController`, `TicketController`.
+- `app/Http/Requests`: `WorkshopRequest`, `RegistrationRequest`.
+- `app/Services/MidtransService.php`: Snap token + cek status + pemetaan status.
+- `app/Policies/RegistrationPolicy.php`: peserta hanya membuka pendaftaran/tiket miliknya.
+- `app/Http/Middleware/EnsureRole.php`: alias middleware `role` (daftar di `bootstrap/app.php`).
+- `resources/views`: `layouts`, `components`, `workshops`, `registrations`, `panitia`.
+- `docs/`: `backlog.md`, `query-comparison.md`, `test-checklist.md`.
+
+## Dokumentasi
+
+- `PRD.md` — spesifikasi (FR-xx, T-xx).
+- `AGENTS.md` — panduan kerja.
+- `docs/backlog.md` — status item backlog.
+- `docs/query-comparison.md` — perbandingan query lazy vs eager.
+- `docs/test-checklist.md` — checklist skenario uji T-01 s.d. T-13.
